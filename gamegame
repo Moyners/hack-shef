@@ -1,0 +1,102 @@
+def bearing():
+    global faces
+    global x
+    global y
+    try:
+        for (x2,y2, w, h) in faces:
+            xCord = x2+10
+            yCord = y2+10
+        relX = x-xCord
+        relY = y-yCord
+        
+        angle = ((math.atan(abs(relX)/abs(relY)))*180)/math.pi
+        if (relX > 0) and (relY >0):
+            return angle
+        elif (relX < 0) and (relY >0):
+            return (360-angle)
+        elif (relX > 0) and (relY <0):
+            return (180-angle)
+        elif (relX < 0) and (relY <0):
+            return (180+angle)
+        else:
+            pass
+    except:
+        pass
+
+def game():
+    global x
+    global y
+    video_capture = cv2.VideoCapture(0)
+
+    while True:
+        # Capture frame-by-frame
+        ret, frame = video_capture.read()
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        global faces
+        faces = face_cascade.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=5,
+            minSize=(30, 30)
+        )  
+        # Draw a rectangle around the faces
+
+        try:
+            if (bearing()>=  345) and (bearing()<= 15):
+                x+=0
+                y-=3
+            elif (bearing()>= 16) and (bearing()<= 45):
+                x-=1
+                y-=2
+            elif (bearing()>= 46) and (bearing()<= 75):
+                x-=2
+                y-=1
+            elif (bearing()>= 76) and (bearing()<= 105):
+                x-=3
+                y+=0
+            elif (bearing()>= 106) and (bearing()<= 135):
+                x-=2
+                y+=1
+            elif (bearing()>= 136) and (bearing()<= 165):
+                x-=1
+                y+=2
+            elif (bearing()>= 166) and (bearing()<= 195):
+                x+=0
+                y+=3
+            elif (bearing()>= 196) and (bearing()<= 225):
+                x+=1
+                y+=2
+            elif (bearing()>= 226) and (bearing()<= 255):
+                x+=2
+                y+=1
+            elif (bearing()>= 256) and (bearing()<= 285):
+                x+=3
+                y+=0
+            elif (bearing()>= 286) and (bearing()<= 315):
+                x+=2
+                y-=1
+            elif (bearing()>=316) and (bearing()< 345):
+                x+=1
+                y-=2
+        except:
+            pass
+                
+
+
+        
+        for (x2, y2, w, h) in faces:
+            cv2.rectangle(frame, (x2, y2), ((x2+w), (y2+h)), (0, 255, 0), 2)
+            cv2.circle(frame, (x,y), 5, (0, 255, 0), 2)
+            
+        # Display the resulting frame
+        cv2.imshow('Video', frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # When everything is done, release the capture
+    video_capture.release()
+    cv2.destroyAllWindows()
+
+start_new_thread(game,())
